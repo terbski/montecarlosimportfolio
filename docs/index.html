@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monte Carlo Portfolio Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="header-left">
+        <h1>Monte Carlo Portfolio</h1>
+        <span id="last-updated" class="subtitle">Ładowanie danych…</span>
+      </div>
+      <div class="header-stats" id="header-stats"></div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Alert: wykluczone tickery -->
+    <div id="excluded-alert" class="alert hidden"></div>
+
+    <!-- Sekcja: KPI Cards -->
+    <section class="kpi-grid" id="kpi-grid"></section>
+
+    <!-- Sekcja: Fan chart + Histogram -->
+    <section class="charts-row">
+      <div class="chart-card wide">
+        <h2>Trajektorie portfela — 1 rok</h2>
+        <div id="chart-fan"></div>
+      </div>
+      <div class="chart-card">
+        <h2>Rozkład wartości końcowej</h2>
+        <div id="chart-histogram"></div>
+      </div>
+    </section>
+
+    <!-- Sekcja: Multi-horizon -->
+    <section class="charts-row">
+      <div class="chart-card">
+        <h2>Analiza multi-horyzontowa</h2>
+        <div id="chart-horizon"></div>
+      </div>
+      <div class="chart-card">
+        <h2>Rozkład maksymalnych drawdownów</h2>
+        <div id="chart-drawdown"></div>
+      </div>
+    </section>
+
+    <!-- Sekcja: Alokacja + Korelacja -->
+    <section class="charts-row">
+      <div class="chart-card">
+        <h2>Alokacja vs Wkład w ryzyko</h2>
+        <div id="chart-allocation"></div>
+      </div>
+      <div class="chart-card">
+        <h2>Macierz korelacji</h2>
+        <div id="chart-corr"></div>
+      </div>
+    </section>
+
+    <!-- Sekcja: Volatility + Stress Tests -->
+    <section class="charts-row">
+      <div class="chart-card">
+        <h2>Roczna zmienność aktywów (t-Student σ)</h2>
+        <div id="chart-vol"></div>
+      </div>
+      <div class="chart-card">
+        <h2>Stress Testing — scenariusze szokowe</h2>
+        <div id="chart-stress"></div>
+      </div>
+    </section>
+
+    <!-- Sekcja: Tabela aktywów -->
+    <section class="table-section">
+      <h2>Szczegóły aktywów</h2>
+      <div class="table-wrapper">
+        <table id="assets-table">
+          <thead>
+            <tr>
+              <th>Ticker</th>
+              <th>Cena (USD)</th>
+              <th>Ilość</th>
+              <th>Wartość</th>
+              <th>Waga %</th>
+              <th>Vol. roczna %</th>
+              <th>Śr. zwrot %</th>
+              <th>ν (t-St.)</th>
+              <th>Historia (lat)</th>
+              <th>Bootstrap (lat)</th>
+            </tr>
+          </thead>
+          <tbody id="assets-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Symulacja Monte Carlo — GBM z rozkładem t-Studenta + dekompozycja Cholesky'ego</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

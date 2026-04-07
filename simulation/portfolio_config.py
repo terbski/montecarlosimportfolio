@@ -25,10 +25,10 @@ PORTFOLIO_RAW: dict[str, tuple[float, float]] = {
 }
 
 # ── Parametry symulacji ───────────────────────────────────────────────────────
-N_SIMULATIONS:   int  = 10_000   # liczba ścieżek Monte Carlo
+N_SIMULATIONS:   int  = 25_000   # liczba ścieżek Monte Carlo
 HISTORY_YEARS:   int  = 10       # lat historii (pobiera maks. dostępne jeśli spółka krócej istnieje)
-SIMULATION_DAYS: int  = 252      # horyzont symulacji (dni handlowe)
-HORIZONS:        list = [21, 63, 126, 252]  # horyzonty analizy: 1m, 3m, 6m, 1y
+SIMULATION_DAYS: int  = 504      # horyzont symulacji (dni handlowe) — 2 lata
+HORIZONS:        list = [21, 63, 126, 252, 504]  # horyzonty analizy: 1m, 3m, 6m, 1r, 2l
 RANDOM_SEED:     int  = 42
 
 # ── Mapowanie walut ───────────────────────────────────────────────────────────

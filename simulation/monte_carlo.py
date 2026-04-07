@@ -113,6 +113,7 @@ class MonteCarloSimulator:
         # Korelacja przez Cholesky: Z_corr[n,t,:] = L @ Z_indep[n,t,:]
         # Efektywnie: (N, T, A) @ L.T → (N, T, A)
         Z_corr = Z_indep @ self.L.T
+        del Z_indep  # zwolnij ~(N×T×A×8) bajtów
 
         # Skalowanie do t-Studenta: dziel przez sqrt(chi2(nu)/nu)
         # Używamy minimalnego nu dla portfela (zachowawcze)
@@ -120,21 +121,26 @@ class MonteCarloSimulator:
         chi2    = rng.chisquare(df=nu_min, size=(N, T, 1))
         scaling = np.sqrt(chi2 / nu_min)
         Z_t     = Z_corr / scaling  # (N, T, A) — grubsze ogony
+        del Z_corr, chi2, scaling
 
         # GBM: drift + diffusion
         drift     = (self.mu_daily - 0.5 * self.sigma_daily ** 2)  # (A,)
         diffusion = self.sigma_daily                                 # (A,)
 
         log_ret_sim = drift + diffusion * Z_t   # (N, T, A)
+        del Z_t
 
         # Ścieżki cen: (N, T, A)
         cum_log_ret  = np.cumsum(log_ret_sim, axis=1)
+        del log_ret_sim
         price_paths  = self.S0 * np.exp(cum_log_ret)  # (N, T, A)
+        del cum_log_ret
 
         # Wartości portfela: (N, T+1)
         portfolio_paths         = np.empty((N, T + 1))
         portfolio_paths[:, 0]   = self.portfolio_value_0
         portfolio_paths[:, 1:]  = price_paths @ self.quantities  # (N, T)
+        del price_paths
 
         # Końcowe wartości per horyzont
         horizon_finals = {}

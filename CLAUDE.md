@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **File:** `C:/Users/Ignac/Documents/monte_carlo_portfolio.ipynb`
 
-A 10 000-simulation Monte Carlo risk analysis of a 9-asset investment portfolio using Geometric Brownian Motion with correlated returns (Cholesky decomposition).
+A 25 000-simulation Monte Carlo risk analysis of a 9-asset investment portfolio using Geometric Brownian Motion with correlated returns (Cholesky decomposition). Simulation horizon: 2 trading years (504 days).
 
 ### Running the notebook
 
@@ -39,7 +39,7 @@ pip install numpy pandas matplotlib seaborn yfinance scipy jupyter
 | 1 | Portfolio definition — `PORTFOLIO_RAW` dict: `{ticker: (qty, purchase_price)}` |
 | 2 | yfinance data download + FX conversion to USD + μ/σ estimation |
 | 3 | Correlation heatmap |
-| 4 | GBM simulation loop — produces `portfolio_paths` array `(10000, 253)` |
+| 4 | GBM simulation loop — produces `portfolio_paths` array `(25000, 505)` |
 | 5 | Risk metrics: VaR 95/99%, CVaR, percentile distribution |
 | 6 | Visualizations: fan chart, histogram, risk contribution, volatility bar |
 

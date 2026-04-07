@@ -96,7 +96,7 @@ function renderKPIs(d) {
 
   const kpis = [
     {
-      label: 'Mediana (1 rok)',
+      label: `Mediana (${Math.round(d.meta.simulation_days / 252)} ${d.meta.simulation_days <= 252 ? 'rok' : 'lata'})`,
       value: `$${fmt(rm.median_end_usd)}`,
       sub:   pnlStr(rm.median_end_usd, v0),
       cls:   rm.median_end_usd >= v0 ? 'positive' : 'negative',
@@ -132,7 +132,7 @@ function renderKPIs(d) {
     {
       label: 'P(strata)',
       value: `${probs.prob_loss}%`,
-      sub: 'Prawdopodob. straty w 1 roku',
+      sub: `Prawdopodob. straty (${Math.round(d.meta.simulation_days / 252)}L)`,
       cls: probs.prob_loss > 30 ? 'negative' : probs.prob_loss > 10 ? 'orange' : 'positive',
     },
     {
@@ -182,10 +182,20 @@ function renderFanChart(d) {
     },
   ];
 
+  // Pionowe markery roczne
+  const shapes = [];
+  for (let yr = 1; yr * 252 < T; yr++) {
+    shapes.push({
+      type: 'line', x0: yr * 252, x1: yr * 252, y0: 0, y1: 1, yref: 'paper',
+      line: { color: '#30363d', width: 1, dash: 'dot' },
+    });
+  }
+
   Plotly.newPlot('chart-fan', traces, {
     ...PLOTLY_LAYOUT_BASE,
     yaxis: { ...PLOTLY_LAYOUT_BASE.yaxis, tickprefix: '$', tickformat: ',.0f' },
     xaxis: { ...PLOTLY_LAYOUT_BASE.xaxis, title: 'Dzień handlowy' },
+    shapes,
     showlegend: true,
     legend: { orientation: 'h', y: -0.15 },
   }, PLOTLY_CONFIG);
@@ -233,13 +243,13 @@ function renderHistogram(d) {
 
 // ── Multi-horizon box plot ────────────────────────────────────────────────────
 function renderMultiHorizon(horizonData, v0) {
-  const labels = { '21': '1 miesiąc', '63': '3 miesiące', '126': '6 miesięcy', '252': '1 rok' };
-  const colors  = ['#58a6ff', '#3fb950', '#d29922', '#f85149'];
+  const labels = { '21': '1 miesiąc', '63': '3 miesiące', '126': '6 miesięcy', '252': '1 rok', '504': '2 lata' };
+  const colors  = ['#58a6ff', '#3fb950', '#d29922', '#f85149', '#a371f7'];
 
+  const horizonKeys = Object.keys(horizonData);
   const traces = Object.entries(horizonData).map(([h, hd], i) => {
     const pcts  = hd.percentiles;
-    const ret   = hd.returns_pct;
-    const color = colors[i];
+    const color = colors[i % colors.length];
     return {
       type:  'box',
       name:  labels[h] || `${h}d`,
@@ -256,8 +266,8 @@ function renderMultiHorizon(horizonData, v0) {
   });
 
   traces.push({
-    x: Object.keys(labels).map(h => labels[h] || `${h}d`),
-    y: Array(4).fill(v0),
+    x: horizonKeys.map(h => labels[h] || `${h}d`),
+    y: horizonKeys.map(() => v0),
     mode: 'lines', name: 'Wartość startowa',
     line: { color: '#f85149', dash: 'dash', width: 1.5 },
     showlegend: false,

@@ -1,0 +1,43 @@
+name: Monte Carlo Simulation
+
+on:
+  schedule:
+    - cron: '0 7 * * 1-5'   # pon–pt, 7:00 UTC (przed otwarciem giełd europejskich)
+  workflow_dispatch:          # ręczne uruchomienie z GitHub UI
+
+permissions:
+  contents: write             # potrzebne do git push
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run simulation
+        run: python simulation/run_simulation.py
+
+      - name: Commit updated data.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/results/data.json
+          git diff --staged --quiet \
+            && echo "Brak zmian w data.json — pomijam commit." \
+            || git commit -m "chore: update simulation $(date -u +%Y-%m-%d)"
+
+      - name: Push changes
+        run: git push
